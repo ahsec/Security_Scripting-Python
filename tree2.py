@@ -25,7 +25,7 @@ def walk(pth):
 
 def main():
   rootdir = sys.argv[1]
-  global depthe
+  global depth
   walk(rootdir)
         
 if __name__ == '__main__':
