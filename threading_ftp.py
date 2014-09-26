@@ -1,8 +1,11 @@
 #!/usr/bin/python
 import threading
+import thread
 import Queue
 import time
 from ftplib import FTP
+
+gLock = thread.allocate_lock()
 
 class WorkerThread(threading.Thread):
   """
@@ -17,15 +20,27 @@ class WorkerThread(threading.Thread):
     self.queue = queue
 
   def run(self):
-    print 'Inside worker thread'
-    # In this section, different tasks can be added to be runned by the threads 
-    while True:
-      site = self.queue.get()
-      ftp = FTP(site)
-      ftp.login()
-      print 'Retrieving FTP DIR info from site:  %s' %(site)
-      ftp.retrlines('LIST')
-      ftp.quit()
+    try:
+      gLock.acquire()
+      print 'Inside worker thread'
+      # In this section, different tasks can be added to be runned by the threads 
+      while True:
+        site = self.queue.get()
+        ftp = FTP(host = site, timeout = .7)
+        ftp.login()
+        print """ ====================================================
+Retrieving FTP DIR info from site:  %s
+====================================================""" %(site)
+        ftp.retrlines('LIST')
+        print """ ====================================================
+FTP List retrieved
+===================================================="""
+        ftp.quit()
+        self.queue.task_done()
+    except Exception as e:
+      print 'Exception: %s' %(e)
+    finally:
+      gLock.release()
       self.queue.task_done()
 
 def get_ftp_list():
@@ -35,7 +50,12 @@ def get_ftp_list():
   return ftp_list
 
 def main():
+  # Make sure the queue gets filled before calling the workerTrhread method
   queue = Queue.Queue()
+  ftp_list = get_ftp_list()
+  for ftp_site in ftp_list:
+    site = ftp_site[:-1]
+    queue.put(site)
   for i in range(10):
     print 'Creating Worker Thread: %d' %(i)
     worker = WorkerThread(queue)
@@ -57,10 +77,6 @@ def main():
     print 'WorkerThread %d Created!' %(i)
 
 
-  ftp_list = get_ftp_list()
-  for ftp_site in ftp_list:
-    site = ftp_site[:-1]
-    queue.put(site)
   """
   Other threads can call a thread's join() method. This blocks the calling thread until 
   the thread whose join() method is called is terminated
