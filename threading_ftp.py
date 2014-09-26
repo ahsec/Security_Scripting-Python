@@ -5,6 +5,9 @@ import Queue
 import time
 from ftplib import FTP
 
+
+# thread.allocate_Lock - Locks a thread until it finishes it's tasks, then it releases it's resources 
+# and allows the program to terminate gracefully
 gLock = thread.allocate_lock()
 
 class WorkerThread(threading.Thread):
@@ -21,8 +24,9 @@ class WorkerThread(threading.Thread):
 
   def run(self):
     try:
+      # Calling the lock for the threads here
       gLock.acquire()
-      print 'Inside worker thread'
+#      print 'Inside worker thread'
       # In this section, different tasks can be added to be runned by the threads 
       while True:
         site = self.queue.get()
@@ -40,6 +44,8 @@ FTP List retrieved
     except Exception as e:
       print 'Exception: %s' %(e)
     finally:
+      # No matter what (Exception raised or not, the Lock gets released and all the 
+      # resources asigned to it too.
       gLock.release()
       self.queue.task_done()
 
@@ -57,7 +63,7 @@ def main():
     site = ftp_site[:-1]
     queue.put(site)
   for i in range(10):
-    print 'Creating Worker Thread: %d' %(i)
+#    print 'Creating Worker Thread: %d' %(i)
     worker = WorkerThread(queue)
     """
     A thread can be flagged as a "daemon thread". The significance of this flag is that
@@ -74,7 +80,7 @@ def main():
     make them non-daemonic and use a suitable signalling mechanism such as an Event.
     """
     worker.start()
-    print 'WorkerThread %d Created!' %(i)
+#    print 'WorkerThread %d Created!' %(i)
 
 
   """
