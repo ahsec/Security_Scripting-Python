@@ -30,16 +30,25 @@ def start_sniffer():
   print '  -[Source MAC Addr (6 bytes)]: %s' %(binascii.b2a_hex(eth_hdr[1]))
   print '  -[Ethernet Type (2 bytes)]: %s' %(binascii.b2a_hex(eth_hdr[2])) + '\n'
   
+  # IP Header 20 bytes long
   ipHeader = pkt[0][14:34]
   ip_hdr = struct.unpack('>12s4s4s', ipHeader)
   print '+[IP Header (20 bytes)]: %s' %(str(ip_hdr))
   print '  -[Initial 12 bytes of the IP Header]: %s' %(str(ip_hdr[0]))
   print '  -[Source IP Address (4 bytes)]: %s' %(socket.inet_ntoa(ip_hdr[1]))
-  print '  -[Destination IP Address (4 byte)]: %s' %(socket.inet_ntoa(ip_hdr[2]))
+  print '  -[Destination IP Address (4 byte)]: %s' %(socket.inet_ntoa(ip_hdr[2])) + '\n'
 
   # Initial part of the TCP Header
+  # TCP Header. 20 bytes long
   tcpHeader = pkt[0][34:54]
-  tcp_hdr = struct.unpack('!HH16s', tcpHeader)
+  # First Unsigned short (H) is the source Port (2 bytes)
+  # Second Unsigned short (H) is the destination Port (2 bytes)
+  # The following HH is for the sequence number (4 bytes)
+  tcp_hdr = struct.unpack('>HHHH12s', tcpHeader)
+  print '+[TCP Header (20 bytes)]: %s' %str((tcp_hdr))
+  print '  -[Source Port (2 bytes)]: %s' %(tcp_hdr[0])
+  print '  -[Destination Port (2 bytes)]: %s' %(tcp_hdr[1])
+  print '  -[Sequence Number (4 bytes)]: %s%s' %(tcp_hdr[2], tcp_hdr[3]) 
 
 def main():
   start_sniffer()
