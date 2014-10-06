@@ -9,6 +9,9 @@ This version prints out more information about the Ethernet, IP and TCP headers
 
 From the file "/usr/src/kernels/3.16.3-200.fc20.i686+PAE/include/uapi/linux/if_ether.h" 0x0003 means:
   define ETH_P_IP        0x0800          /* Internet Protocol packet     */   <<<< IPv4
+
+Size of data types in pyhton:
+  https://docs.python.org/2/library/struct.html
 """
 
 def start_sniffer():
@@ -38,7 +41,7 @@ def Ethernet_hdr_parser(pkt):
 def IP_hdr_parser(pkt):
   # IP Header 20 bytes long
   ipHeader = pkt[0][14:34]
-  ip_hdr = struct.unpack('>ssHHs5s4s4s', ipHeader)
+  ip_hdr = struct.unpack('>ssHHsssHs4s4s', ipHeader)
   print '+[IP Header (20 bytes)]: %s' %(str(ip_hdr))
   # The first byte contains the IP version and the IHL (Internet Header Length), so we will split them 
   IPv_and_IHL = binascii.b2a_hex(ip_hdr[0])
@@ -54,11 +57,21 @@ def IP_hdr_parser(pkt):
   # Flags use 3/8 of a byte and fragment offset 5/8 of a byte
   # We will read 1 byte, use the binary represantation and interpret from there
 #  flags_and_off = binascii.a2b_hex(ip_hdr[4])
-  flags_and_off = bin(int(ip_hdr[4])>>1)
+  flags_and_off = binascii.b2a_hex(ip_hdr[4])
+  flags_off_tuple = getBinRep(flags_and_off)
+  flags = flags_off_tuple[0][2:5]
+  flags = str(flags).rstrip('[]').replace(',','').replace('[','').replace('\'','').replace(' ','')
+  offset = flags_off_tuple[0][5:]
+  offset.append(flags_off_tuple[1][2:])
+  offset = str(offset).rstrip('[]').replace(',','').replace('[','').replace('\'','').replace(' ','')
 #  flags = 
-  print 'Flags and Offset %s or %s ' %(ip_hdr[4], binascii.b2a_hex(ip_hdr[4]))
-  print '  -[Source IP Address (4 bytes)]: %s' %(socket.inet_ntoa(ip_hdr[6]))
-  print '  -[Destination IP Address (4 bytes)]: %s' %(socket.inet_ntoa(ip_hdr[7])) + '\n'
+  print '  -[Flags (3 bits)]: %s ' %(flags)
+  print '  -[Fragment offset (5 bits)]: %s' %(offset)
+  print '  -[Time To Live TTL (1 byte) hex]: %s' %(binascii.b2a_hex(ip_hdr[5]))
+  print '  -[Protocol (1 byte) hex]: %s' %(binascii.b2a_hex(ip_hdr[6]))
+  print '  -[Header CheckSum (2 byte)]: %s' %(ip_hdr[7])
+  print '  -[Source IP Address (4 bytes)]: %s' %(socket.inet_ntoa(ip_hdr[9]))
+  print '  -[Destination IP Address (4 bytes)]: %s' %(socket.inet_ntoa(ip_hdr[10])) + '\n'
 
 def TCP_hdr_parser(pkt):
   # TCP Header. 20 bytes long
@@ -66,11 +79,33 @@ def TCP_hdr_parser(pkt):
   # First Unsigned short (H) is the source Port (2 bytes)
   # Second Unsigned short (H) is the destination Port (2 bytes)
   # The following HH is for the sequence number (4 bytes)
-  tcp_hdr = struct.unpack('>HHHH12s', tcpHeader)
+  tcp_hdr = struct.unpack('>HHIIss6s', tcpHeader)
   print '+[TCP Header (20 bytes)]: %s' %str((tcp_hdr))
   print '  -[Source Port (2 bytes)]: %s' %(tcp_hdr[0])
   print '  -[Destination Port (2 bytes)]: %s' %(tcp_hdr[1])
-  print '  -[Sequence Number (4 bytes)]: %s%s' %(tcp_hdr[2], tcp_hdr[3])
+  print '  -[Sequence Number (4 bytes)]: %s' %(tcp_hdr[2])
+  print '  -[Acknowledgment Number (4 bytes)]: %s' %(tcp_hdr[3])
+  # Data Offset 4 bits, Reserved (all zeros) 6 bits, Control bits 6 bits. Total 16 bits (ss)
+  off_rsv_ctr = (tcp_hdr[4], tcp_hdr[5])
+
+def getBinRep(flags_and_off):
+  part1 = flags_and_off[0]
+  part2 = flags_and_off[1]
+  bin1 = bin(int(part1))
+  bin2 = bin(int(part2))
+  if len(bin1) < 6:
+    bin1 = growBin(bin1, 6)
+  if len(bin2) < 6:
+    bin2 = growBin(bin2, 6)
+  return (bin1,bin2)
+
+def growBin(binary, size):
+  bin_list = []
+  for b in binary:
+    bin_list.append(b)
+  while len(bin_list) < size:
+    bin_list.insert(2,0)
+  return bin_list
 
 def main():
   start_sniffer()
