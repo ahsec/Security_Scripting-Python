@@ -86,7 +86,22 @@ def TCP_hdr_parser(pkt):
   print '  -[Sequence Number (4 bytes)]: %s' %(tcp_hdr[2])
   print '  -[Acknowledgment Number (4 bytes)]: %s' %(tcp_hdr[3])
   # Data Offset 4 bits, Reserved (all zeros) 6 bits, Control bits 6 bits. Total 16 bits (ss)
-  off_rsv_ctr = (tcp_hdr[4], tcp_hdr[5])
+  (dOffset, Rsvd, ctrl) = TCP_brk_options(tcp_hdr[4], tcp_hdr[5])
+  print '  -[Data Offset (4 bits)]: %s' %(dOffset)
+  print '  -[Reserved (6 bits)]: %s' %(Rsvd)
+  print '  -[Control bits (6 bits)]: %s' %(ctrl)
+  
+
+def TCP_brk_options(part1, part2):
+  bin1 = bin(int(binascii.b2a_hex(part1)))
+  bin2 = bin(int(binascii.b2a_hex(part2)))
+  part1 = growBin(bin1, 10)
+  part2 = growBin(bin2, 10)
+  dOffset = part1[2:6]
+  Rsvd = part1[6:]
+  Rsvd.append(part2[2:4])
+  ctrl = part2[4:]
+  return (dOffset, Rsvd, ctrl)
 
 def getBinRep(flags_and_off):
   part1 = flags_and_off[0]
