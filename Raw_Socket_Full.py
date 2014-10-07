@@ -87,20 +87,25 @@ def TCP_hdr_parser(pkt):
   print '  -[Acknowledgment Number (4 bytes)]: %s' %(tcp_hdr[3])
   # Data Offset 4 bits, Reserved (all zeros) 6 bits, Control bits 6 bits. Total 16 bits (ss)
   (dOffset, Rsvd, ctrl) = TCP_brk_options(tcp_hdr[4], tcp_hdr[5])
-  print '  -[Data Offset (4 bits)]: %s' %(dOffset)
+  print '  -[Data Offset (4 bits)]: %s 32 bit words or %s bytes' %(int(dOffset, base = 2), (int(dOffset, base = 2)*4))
   print '  -[Reserved (6 bits)]: %s' %(Rsvd)
-  print '  -[Control bits (6 bits)]: %s' %(ctrl)
-  
+  ctrl_names = decode_ctrl_bits(str(ctrl))
+  print '  -[Control bits (6 bits)]: %s' %(ctrl_names)
 
 def TCP_brk_options(part1, part2):
   bin1 = bin(int(binascii.b2a_hex(part1)))
+#  bin1 = binascii.b2a_hex(part1)
   bin2 = bin(int(binascii.b2a_hex(part2)))
+#  bin2 = binascii.b2a_hex(part2)
   part1 = growBin(bin1, 10)
   part2 = growBin(bin2, 10)
   dOffset = part1[2:6]
+  dOffset = str(dOffset).rstrip('[]').replace(',','').replace('[','').replace('\'','').replace(' ','')
   Rsvd = part1[6:]
   Rsvd.append(part2[2:4])
+  Rsvd = str(Rsvd).rstrip('[]').replace(',','').replace('[','').replace('\'','').replace(' ','')
   ctrl = part2[4:]
+  ctrl = str(ctrl).rstrip('[]').replace(',','').replace('[','').replace('\'','').replace(' ','')
   return (dOffset, Rsvd, ctrl)
 
 def getBinRep(flags_and_off):
@@ -121,6 +126,23 @@ def growBin(binary, size):
   while len(bin_list) < size:
     bin_list.insert(2,0)
   return bin_list
+
+def decode_ctrl_bits(ctrl):
+  # Decodes the 6 bits in the TCP header for the Control flags
+  ctrl_names = []
+  if ctrl[0] == '1' :
+    ctrl_names.append('URG')
+  if ctrl[1] == '1' :
+    ctrl_names.append('ACK')
+  if ctrl[2] == '1' :
+    ctrl_names.append('PSH')
+  if ctrl[3] == '1' :
+    ctrl_names.append('RST')
+  if ctrl[4] == '1' :
+    ctrl_names.append('SYN')
+  if ctrl[5] == '1' :
+    ctrl_names.append('FIN')
+  return ctrl_names
 
 def main():
   start_sniffer()
