@@ -20,6 +20,7 @@ def start_sniffer():
   # Waits for a packet coming from the specified Socket
   pkt = rawSocket.recvfrom(2048)
   print '+[Packet captured]: ' + str(pkt) + '\n'
+  # Calling each header Parser (Ethernet, IP and TCP)
   Ethernet_hdr_parser(pkt)
   IP_hdr_parser(pkt)
   TCP_hdr_parser(pkt)
@@ -41,6 +42,8 @@ def Ethernet_hdr_parser(pkt):
 def IP_hdr_parser(pkt):
   # IP Header 20 bytes long
   ipHeader = pkt[0][14:34]
+  # Unpacking all the elements in the IP Header
+  # IP version, IHL, ToS, Total Length, ID number, Flags, Fragment Offset, TTL, Protocol, Header Checksum, Source IP, Destination IP
   ip_hdr = struct.unpack('>ssHHsssHs4s4s', ipHeader)
   print '+[IP Header (20 bytes)]: %s' %(str(ip_hdr))
   # The first byte contains the IP version and the IHL (Internet Header Length), so we will split them 
@@ -56,7 +59,6 @@ def IP_hdr_parser(pkt):
   print '  -[Identification Number (2 bytes)]: %s ' %(str(ip_hdr[3]))
   # Flags use 3/8 of a byte and fragment offset 5/8 of a byte
   # We will read 1 byte, use the binary represantation and interpret from there
-#  flags_and_off = binascii.a2b_hex(ip_hdr[4])
   flags_and_off = binascii.b2a_hex(ip_hdr[4])
   flags_off_tuple = getBinRep(flags_and_off)
   flags = flags_off_tuple[0][2:5]
@@ -64,12 +66,12 @@ def IP_hdr_parser(pkt):
   offset = flags_off_tuple[0][5:]
   offset.append(flags_off_tuple[1][2:])
   offset = str(offset).rstrip('[]').replace(',','').replace('[','').replace('\'','').replace(' ','')
-#  flags = 
   print '  -[Flags (3 bits)]: %s ' %(flags)
   print '  -[Fragment offset (5 bits)]: %s' %(offset)
   print '  -[Time To Live TTL (1 byte) hex]: %s' %(binascii.b2a_hex(ip_hdr[5]))
   print '  -[Protocol (1 byte) hex]: %s' %(binascii.b2a_hex(ip_hdr[6]))
   print '  -[Header CheckSum (2 byte)]: %s' %(ip_hdr[7])
+  # We use socket.inet_ntoa to convert from 32 bits notation to IP Address String 
   print '  -[Source IP Address (4 bytes)]: %s' %(socket.inet_ntoa(ip_hdr[9]))
   print '  -[Destination IP Address (4 bytes)]: %s' %(socket.inet_ntoa(ip_hdr[10])) + '\n'
 
@@ -78,7 +80,7 @@ def TCP_hdr_parser(pkt):
   tcpHeader = pkt[0][34:54]
   # First Unsigned short (H) is the source Port (2 bytes)
   # Second Unsigned short (H) is the destination Port (2 bytes)
-  # The following HH is for the sequence number (4 bytes)
+  # The following I is for the sequence number (4 bytes)
   tcp_hdr = struct.unpack('>HHIIss6s', tcpHeader)
   print '+[TCP Header (20 bytes)]: %s' %str((tcp_hdr))
   print '  -[Source Port (2 bytes)]: %s' %(tcp_hdr[0])
@@ -89,17 +91,22 @@ def TCP_hdr_parser(pkt):
   (dOffset, Rsvd, ctrl) = TCP_brk_options(tcp_hdr[4], tcp_hdr[5])
   print '  -[Data Offset (4 bits)]: %s 32 bit words or %s bytes' %(int(dOffset, base = 2), (int(dOffset, base = 2)*4))
   print '  -[Reserved (6 bits)]: %s' %(Rsvd)
+  # Calling function "decode_ctrl_bits" to convert from bits to Flag names
   ctrl_names = decode_ctrl_bits(str(ctrl))
   print '  -[Control bits (6 bits)]: %s' %(ctrl_names)
 
 def TCP_brk_options(part1, part2):
+  # From 2 bytes (16 bits) we will get Data Offset(4 bits), Reserved Bits (6 bits) and Control bits (6 bits)
   bin1 = bin(int(binascii.b2a_hex(part1)))
 #  bin1 = binascii.b2a_hex(part1)
   bin2 = bin(int(binascii.b2a_hex(part2)))
 #  bin2 = binascii.b2a_hex(part2)
+  # Calling function growBin to expand the size of the binary number to 10 characteres 
   part1 = growBin(bin1, 10)
   part2 = growBin(bin2, 10)
+  # Breakin g the result (first part is Data offset)
   dOffset = part1[2:6]
+  # Using rstrip to remove all the [],' characteres in the resulting string
   dOffset = str(dOffset).rstrip('[]').replace(',','').replace('[','').replace('\'','').replace(' ','')
   Rsvd = part1[6:]
   Rsvd.append(part2[2:4])
@@ -120,15 +127,19 @@ def getBinRep(flags_and_off):
   return (bin1,bin2)
 
 def growBin(binary, size):
+  # Function to expand the size of a binary number to a size "size"
+  # It adds zeros to the beginning of the string
   bin_list = []
   for b in binary:
     bin_list.append(b)
   while len(bin_list) < size:
+    # Insert a 0 in the Second position (after the 0b characters)
     bin_list.insert(2,0)
   return bin_list
 
 def decode_ctrl_bits(ctrl):
   # Decodes the 6 bits in the TCP header for the Control flags
+  # Flags are (in order): URG, ACK, PSH, RST, SYN and FIN
   ctrl_names = []
   if ctrl[0] == '1' :
     ctrl_names.append('URG')
@@ -136,7 +147,7 @@ def decode_ctrl_bits(ctrl):
     ctrl_names.append('ACK')
   if ctrl[2] == '1' :
     ctrl_names.append('PSH')
-  if ctrl[3] == '1' :
+  if ctrl[3] == '1' : 
     ctrl_names.append('RST')
   if ctrl[4] == '1' :
     ctrl_names.append('SYN')
