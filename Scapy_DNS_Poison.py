@@ -10,6 +10,9 @@ from scapy.all import *
 # 1. Sniff traffic to capture dnsn requests
 # 2. Forge a response packet with some evil info in it
 # 3. Verify on the client side
+# 
+# Inspired by: http://danmcinerney.org/reliable-dns-spoofing-with-python-scapy-nfqueue/
+
 
 def run_dns_spoof():
   # Sniffing, looking for DNS traffic
