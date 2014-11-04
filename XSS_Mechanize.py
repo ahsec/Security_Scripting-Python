@@ -42,7 +42,7 @@ Links found in Document:
   br.submit()
 
   # Reading the response. If the XSS attack was succesful we will get the "injected" text in the HTML body
-  # So to verify this we will lokk at the body
+  # So to verify this we will look at the body
   html = br.response().readlines()
   # Converting the HTML response to string to look for the "injected" string
   str_html = str(html)
