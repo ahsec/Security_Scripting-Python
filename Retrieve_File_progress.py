@@ -22,7 +22,7 @@ def get_code(url):
   return code
   
 def get_file(url):
-  # Runs function to verify that the file exist.
+  # Run function to verify that the file exist.
   code = get_code(url)
   if code != 200:
     print "File doesn't exist, please verify your URL"
