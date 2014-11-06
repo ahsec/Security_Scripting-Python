@@ -23,7 +23,7 @@ def xss_attack_guestbook(url):
     exit
   
   print """====================================
-Links found in Document:
+Link(s) found in Document:
 ===================================="""
   for link in br.links():
     print "[Link name]: %s - [Link URL]: %s" %(link.text, link.url)
