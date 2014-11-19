@@ -20,7 +20,6 @@ def dissasemble(filename):
   while offset < len(data):
     # Loop through the data and dissasemble
     i = pydasm.get_instruction(data[offset:], pydasm.MODE_32)
-#    print hex(data[offset:]) +'    ' +  pydasm.get_instruction_string(i, pydasm.FORMAT_INTEL, ep_ava+offset)
     print pydasm.get_instruction_string(i, pydasm.FORMAT_INTEL, ep_ava+offset)
     offset += i.length
 
