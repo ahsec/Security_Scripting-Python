@@ -1,19 +1,22 @@
 #!/usr/bin/python
 import pefile
 import sys
-
+'''
 # SPSE Module 6. Lesson 2. Reverse Engineering
 # search_dll.py EXE_filename [dll_name]
-# If no dll_name is provided, this script will list all the dll files imported by the EXE file provided
-# If a dll_name is provided, this script will look in the Executable for the provided dll and return True if present or False if not
-
+# If no dll_name is provided, this script will list all the dll files
+# imported by the EXE file provided. If a dll_name is provided, this script
+# will look in the Executable for the provided dll and return True if present
+# or False if not
+'''
 def search_dll(filename, dll_name):
   result = False
   dll_name = dll_name.lower()
   # Getting the list (by using the get_dlls function
   dll_list = get_dlls(filename)
   for entry in dll_list:
-    # Compare lowercase input against lower case found, If match result = True
+    # Compare lowercase input against lower case found,
+    # If match result = True
     found = entry.lower()
     if found == dll_name:
       result = True
@@ -21,7 +24,7 @@ def search_dll(filename, dll_name):
 
 def get_dlls(filename):
   dll_list = []
-  # Opening the exe file with the pefile library 
+  # Opening the exe file with the pefile library
   pe = pefile.PE(filename)
   for entry in pe.DIRECTORY_ENTRY_IMPORT:
     # Reading the dlls entries and saving the found files in the dll_list list
@@ -43,12 +46,14 @@ def print_dlls(filename):
 
 def usage():
  print """search_dll.py EXE_filename [dll_name]
-If no dll_name is provided, this script will list all the dll files imported by the EXE file provided
-If a dll_name is provided, this script will look in the Executable for the provided dll and return True if present or False if not """
-
+       If no dll_name is provided, this script will list all the dll files
+       imported by the EXE file provided. If a dll_name is provided,
+       this script will look in the Executable for the provided dll and return
+       True if present or False if not.
+       """
 def main():
   num_args = len(sys.argv)
-  # At least 2 arguments must be provided 
+  # At least 2 arguments must be provided
   if num_args < 2:
     usage()
   elif num_args == 2:

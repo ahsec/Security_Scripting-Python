@@ -1,18 +1,22 @@
 #!/bin/usr/python
 import SimpleHTTPServer
 import SocketServer
-
-""" SPSE Module 3. Simple HTTP Server.
+"""
+SPSE Module 3. Simple HTTP Server.
 This example creates a simple HTTP Server that listens on port 10001.
 """
 
 class HTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
-  # This section defines an HTTP Request Handler, not using the default "SimpleHTTPServer.SimpleHTTPRequestHandler"
-  # at least, not yet
+  '''
+  This section defines an HTTP Request Handler, not using the default
+  "SimpleHTTPServer.SimpleHTTPRequestHandler" at least, not yet.
+  '''
   def do_GET(self):
-    # The "special" thing about this handler is that it recognizes when there is an '/admin' in the URL
-    # and retrieves a "special" page for the super sleek admin
-    # This is done by overwriting the do_GET method
+    '''
+    The "special" thing about this handler is that it recognizes when there
+    is an '/admin' in the URL and retrieves a "special" page for the super
+    sleek admin. This is done by overwriting the do_GET method.
+    '''
     if self.path == '/admin':
       self.wfile.write('Admin Page')
       self.wfile.write(self.headers)

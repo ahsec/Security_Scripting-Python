@@ -1,15 +1,15 @@
 #!/usr/bin/python
 from scapy.all import *
+'''
+SPSE Module 3. Lesson 6. Exercise 2
+A network sniffer that reads all the SSID beacons prints the result.
 
-""" SPSE Module 3. Lesson 6. Exercise 2
-A network sniffer that reads all the SSID beacons prints the result """
-# Requires an interface in monitor mode (not required but better if you have it is an interface 
-# that could be changing frequencies 
+Requires an interface in monitor mode (not required but better if you have it
+is an interface that could be changing frequencies.
+'''
 
 def start_SSID_sniffer():
-  print """############################################################
-                           SSID List
-############################################################"""
+  print "##### SSID List #####"
   ssid_list = []
   while True:
     # That is the name of the interface that my Alfa card gets ...

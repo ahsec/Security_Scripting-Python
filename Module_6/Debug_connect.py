@@ -25,9 +25,11 @@ def debug(pname):
       dbg.attach(pid)
 
   rcv_api_addr = dbg.func_resolve("ws2_32", "recv")
-  dbg.bp_set(rcv_api_addr, description = 'Recieve BreakPoint', handler = rcv_bp)
+  dbg.bp_set(rcv_api_addr, description = 'Recieve BreakPoint',
+             handler = rcv_bp)
   send_api_addr = dbg.func_resolve("ws2_32", "send")
-  dbg.bp_set(send_api_addr, description = 'Send BreakPoint', handler = send_bp)
+  dbg.bp_set(send_api_addr, description = 'Send BreakPoint',
+             handler = send_bp)
   dbg.run()
 
 def main():

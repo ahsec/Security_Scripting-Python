@@ -2,13 +2,16 @@
 import socket
 import threading
 import SocketServer
-
-# Echo server that uses ThreadedTCPRequestHandler: Uses threads to handle incoming connections
-# Can handle multiple connections at the same time
-
+'''
+Echo server that uses ThreadedTCPRequestHandler: Uses threads to handle
+incoming connections. Can handle multiple connections at the same time
+'''
 class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
-  # This is the thread code. It can be whatever you want, this section
-  # defines what are the threads going to do. (The main thread just creates 'child' threads
+  '''
+  This is the thread code. It can be whatever you want, this section defines
+  what are the threads going to do. (The main thread just creates 'child'
+  threads.
+  '''
   def handle(self):
     # In this case we just wait for data and return it to the client
     data = 'dummy'
@@ -22,10 +25,7 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
   pass
 
-# main boiler plate 
-
-if __name__ == "__main__":
- 
+def main():
   # Assigns an IP and a port to the server
   HOST, PORT = "0.0.0.0", 9000
   # Creates a Threaded TCP Server and sets it to listen for incoming connections
@@ -36,8 +36,10 @@ if __name__ == "__main__":
   # more thread for each request
   server_thread = threading.Thread(target=server.serve_forever)
   # Exit the server thread when the main thread terminates
-#  server_thread.daemon = True
+  # server_thread.daemon = True
   server_thread.start()
   print 'Server loop running in thread: %s' %(server_thread.name)
   print 'Waiting for incoming connections...'
 
+if __name__ == "__main__":
+  main()

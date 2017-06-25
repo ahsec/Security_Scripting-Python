@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 __VERSION__ = '1.0'
 import immlib
 from immlib import BpHook
@@ -11,7 +10,7 @@ class StrcpyBpHook(BpHook):
 
   def __init__(self) :
     BpHook.__init__(self)
-  
+
   def run(self, regs):
     imm = immlib.Debugger()
     imm.log('Strcpy BpHook Called')
@@ -22,11 +21,10 @@ class StrcpyBpHook(BpHook):
     strcpyFirstArg = imm.readLong(regs['ESP'] + 4)
     strcpySecondArg = imm.readLong(regs['ESP'] + 8)
     imm.log('EIP on Stack: 0x%08x   First Arg: 0x%08x   Second Arg: 0x%08x' %(eipOnStack, strcpyFirstArg, strcpySecondArg))
-
     # Print the Source String
     recievedString = imm.readString(strcpySecondArg)
-#    imm.log(recievedString)
-    imm.log('Recieved String Length: %d \nValue: %s' %(len(recievedString), str(recievedString)))
+    imm.log('Recieved String Length: %d \nValue: %s' %(len(recievedString),
+            str(recievedString)))
 
 def main(args) :
   # Finding strcpy address
@@ -35,6 +33,6 @@ def main(args) :
   newHook = StrcpyBpHook()
   newHook.add(functionToHook, functionAddress)
 
-  imm.log('Hook for %s : 0x%08x added Succesfully!' %(functionToHook, functionAddress))
+  imm.log('Hook for %s : 0x%08x added Succesfully!' %(functionToHook,
+                                                      functionAddress))
   return 'Hook Installed'
-
