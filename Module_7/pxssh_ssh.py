@@ -30,8 +30,8 @@ def usage():
 
 def main():
   host = '192.168.1.7'
-  user = 'root'
-  passwd = 'openelec'
+  user = 'USERID'
+  passwd = 'PASSWD'
   command = 'uname -a'
   session_ssh(host, user, passwd, command)
 
