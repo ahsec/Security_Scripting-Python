@@ -3,8 +3,8 @@ import os
 import socket
 import sys
 
-# This script creates a "child" process from a "parent" process. 
-# The chlid process will process incoming connections, the parent creates child 
+# This script creates a "child" process from a "parent" process.
+# The chlid process will process incoming connections, the parent creates child
 # by demand (like all parents do)
 
 def child_process(client):
@@ -25,7 +25,8 @@ def child_process(client):
 
 def parent_process():
   print ' I am the parent, my PID is: %d' %(os.getpid())
-  print ' I am about to get forked... just not yet, first we need an incmoing connection...'
+  print ' I am about to get forked... just not yet, first we need an '+\
+        'incmoing connection...'
 
   print "Creating Socket"
   try:
@@ -33,7 +34,8 @@ def parent_process():
     tcpSocket.bind(("0.0.0.0", 8000))
     tcpSocket.listen(10)
   except socket.error, msg:
-    print "Failed to create socket. Error: " + str(msg[0])  + " , Error message " + str(msg[1])
+    print "Failed to create socket. Error: " + str(msg[0])  +\
+          " , Error message " + str(msg[1])
     sys.exit()
 
   print "Socket Created"
@@ -41,7 +43,8 @@ def parent_process():
   while True:
     print "Waiting for another connection"
     (client, (ip, port)) = tcpSocket.accept()
-    print "Creating process for client IP " + str(ip) + " with client port " + str(port)
+    print "Creating process for client IP " + str(ip) +\
+          " with client port " + str(port)
     #Start socket accept in a new thread
     child = os.fork()
     if child == 0:

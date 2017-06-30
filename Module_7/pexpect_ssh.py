@@ -7,10 +7,10 @@ def printing(response):
 
 def automate_ssh(ipaddress):
 #  ip = int(ipaddress)
-  command = 'ssh angelus@%s' %(ipaddress)
+  command = 'ssh userid@%s' %(ipaddress)
   ssh_newkey = 'Are you sure you want to continue connecting'
   p = pexpect.spawn(command)
-  
+
   i = p.expect([ssh_newkey, 'password:', pexpect.EOF])
   if i == 0:
     print '[+] Importing new SSH key'
@@ -18,7 +18,7 @@ def automate_ssh(ipaddress):
     i = p.expect([ssh_newkey, 'password:', pexpect.EOF])
   if i == 1:
     print '[+] Sending password'
-    p.sendline('17/CoPmC07')
+    p.sendline('PASSWORD')
     j = p.expect(['#', '$', pexpect.EOF])
     print p.before
     if j == 0 or j == 1:
@@ -30,7 +30,6 @@ def automate_ssh(ipaddress):
       print p.after
 
       if k == 0 or k == 1:
-#        print '[+] Successful command'
         print p.before
         print p.match
         print p.after

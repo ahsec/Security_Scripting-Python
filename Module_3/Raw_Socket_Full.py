@@ -2,13 +2,15 @@
 import socket
 import struct
 import binascii
-
-""" Second version of the Simple packet sniffer that capture a packet of the for 0x0800
-Prints the Ethernet and IP headers and exits. 
+"""
+Second version of the Simple packet sniffer that capture a packet of the for
+0x0800
+Prints the Ethernet and IP headers and exits.
 This version prints out more information about the Ethernet, IP and TCP headers
 
-From the file "/usr/src/kernels/3.16.3-200.fc20.i686+PAE/include/uapi/linux/if_ether.h" 0x0003 means:
-  define ETH_P_IP        0x0800          /* Internet Protocol packet     */   <<<< IPv4
+From the file /usr/src/kernels/3.16.3-200.fc20.i686+PAE/include/uapi/
+linux/if_ether.h" 0x0003 means:
+  define ETH_P_IP        0x0800          /* Internet Protocol packet     */
 
 Size of data types in pyhton:
   https://docs.python.org/2/library/struct.html
@@ -16,7 +18,8 @@ Size of data types in pyhton:
 
 def start_sniffer():
   # create a socket that will listen for 0x800 packets (IP packets)
-  rawSocket = socket.socket(socket.PF_PACKET, socket.SOCK_RAW, socket.htons(0x0800))
+  rawSocket = socket.socket(socket.PF_PACKET, socket.SOCK_RAW,
+                            socket.htons(0x0800))
   # Waits for a packet coming from the specified Socket
   pkt = rawSocket.recvfrom(2048)
   print '+[Packet captured]: ' + str(pkt) + '\n'
@@ -26,11 +29,15 @@ def start_sniffer():
   TCP_hdr_parser(pkt)
 
 def Ethernet_hdr_parser(pkt):
-  # Ethernet Header is the first 14 bytes of the first part of the captured packet (Ethernet Header
-  # IS always 14 bytes long
+  '''
+  Ethernet Header is the first 14 bytes of the first part of the captured
+  packet (Ethernet Header IS always 14 bytes long.
+  '''
   ethernetHeader = pkt[0][0:14]
-  # We break those 14 bytes into 3 arrays, first and second 6 bytes long and the last one 2 bytes long
-  # All elements in Big Endian Notation
+  ''' We break those 14 bytes into 3 arrays, first and second 6 bytes long and
+  the last one 2 bytes long.
+  All elements in Big Endian Notation.
+  '''
   eth_hdr = struct.unpack('>6s6s2s', ethernetHeader)
   print '+[Ethernet Header (14 bytes)]: %s' %(str(eth_hdr))
   # Converting from binary to hexadecimal in order to be more readable
@@ -43,14 +50,17 @@ def IP_hdr_parser(pkt):
   # IP Header 20 bytes long
   ipHeader = pkt[0][14:34]
   # Unpacking all the elements in the IP Header
-  # IP version, IHL, ToS, Total Length, ID number, Flags, Fragment Offset, TTL, Protocol, Header Checksum, Source IP, Destination IP
+  # IP version, IHL, ToS, Total Length, ID number, Flags, Fragment Offset, TTL,
+  # Protocol, Header Checksum, Source IP, Destination IP
   ip_hdr = struct.unpack('>ssHHsssHs4s4s', ipHeader)
   print '+[IP Header (20 bytes)]: %s' %(str(ip_hdr))
-  # The first byte contains the IP version and the IHL (Internet Header Length), so we will split them 
+  # The first byte contains the IP version and the IHL (Internet Header Length)
+  # so we will split them
   IPv_and_IHL = binascii.b2a_hex(ip_hdr[0])
   IPversion = IPv_and_IHL[0]
   IHL = IPv_and_IHL[1]
-  # IHL in 32-bit words. Includes the length of any options fields and padding. Normal value is 5 (no options used)
+  # IHL in 32-bit words. Includes the length of any options fields and padding.
+  # Normal value is 5 (no options used)
   # (5 32-bit words = 5*4 = 20 bytes).
   print '  -[IP version (4 bits or 1/2 bytes)]: IPv%s' %(IPversion)
   print '  -[Header Length IHL (4 bits or 1/2 bytes)]: %s 32-bit words or %s bytes' %(IHL, (int(IHL)*4) )
@@ -71,7 +81,7 @@ def IP_hdr_parser(pkt):
   print '  -[Time To Live TTL (1 byte) hex]: %s' %(binascii.b2a_hex(ip_hdr[5]))
   print '  -[Protocol (1 byte) hex]: %s' %(binascii.b2a_hex(ip_hdr[6]))
   print '  -[Header CheckSum (2 byte)]: %s' %(ip_hdr[7])
-  # We use socket.inet_ntoa to convert from 32 bits notation to IP Address String 
+  # We use socket.inet_ntoa to convert from 32 bits notation to IP Address String
   print '  -[Source IP Address (4 bytes)]: %s' %(socket.inet_ntoa(ip_hdr[9]))
   print '  -[Destination IP Address (4 bytes)]: %s' %(socket.inet_ntoa(ip_hdr[10])) + '\n'
 
@@ -101,7 +111,7 @@ def TCP_brk_options(part1, part2):
 #  bin1 = binascii.b2a_hex(part1)
   bin2 = bin(int(binascii.b2a_hex(part2)))
 #  bin2 = binascii.b2a_hex(part2)
-  # Calling function growBin to expand the size of the binary number to 10 characteres 
+  # Calling function growBin to expand the size of the binary number to 10 characteres
   part1 = growBin(bin1, 10)
   part2 = growBin(bin2, 10)
   # Breakin g the result (first part is Data offset)
@@ -147,7 +157,7 @@ def decode_ctrl_bits(ctrl):
     ctrl_names.append('ACK')
   if ctrl[2] == '1' :
     ctrl_names.append('PSH')
-  if ctrl[3] == '1' : 
+  if ctrl[3] == '1' :
     ctrl_names.append('RST')
   if ctrl[4] == '1' :
     ctrl_names.append('SYN')

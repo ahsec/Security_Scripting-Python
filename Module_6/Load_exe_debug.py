@@ -4,19 +4,20 @@ from pydbg.defines import *
 from subprocess import call
 import sys
 dbg = pydbg()
-
+'''
 # SPSE Module 6. Lesson 4.
-# Load an executable file especified from command line and debug it using pydbg, looking for buffer overflow errors
-# Sometimes on Windows it shows an error "Bind fails with error: 10048 "
+# Load an executable file especified from command line and debug it using
+# pydbg, looking for buffer overflow errors. Sometimes on Windows it shows
+# an error "Bind fails with error: 10048 "
 # ToDo, figure out why ...
-
+'''
 def find_pid(dbg, filename):
   # SPlit the string using '/' as delimiter and selecting
   # the last resulting element
   process_name = filename.split('\\')[-1]
   process_name_l = process_name.lower()
   for (pid, proc_name) in dbg.enumerate_processes():
-   # Using dbg we enumarate the processes and look for the filename 
+   # Using dbg we enumarate the processes and look for the filename
     if proc_name.lower() == process_name_l.strip():
       return pid
   return -1
@@ -44,9 +45,9 @@ def load_debug(filename):
 
 def usage():
   print """Load_exe_debug.py FILENAME
-This script loads the executable file (FILENAME) and performs debugging activities
-on it once it is loaded on memory"""
-
+        This script loads the executable file (FILENAME) and performs debugging
+        activities on it once it is loaded on memory
+        """
 def main():
   if len(sys.argv) < 2:
     usage()

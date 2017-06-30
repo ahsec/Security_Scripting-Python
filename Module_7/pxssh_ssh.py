@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 import pxssh
 import sys
-
-# SPSE Module 7. Lesson 1 
-# Automating ssh sessions using pxssh
-
+'''
+SPSE Module 7. Lesson 1
+Automating ssh sessions using pxssh
+'''
 def send_command(session, command) :
     session.sendline(command)
     session.prompt()
@@ -24,13 +24,14 @@ def session_ssh(host, user, passwd, command):
   send_command(session, command)
 
 def usage():
-  print """pxssh_ssh.py 
-This script will connect to a ssh server HOST using the provided USER and PASSWD and will issue the command and show the result"""
+  print """pxssh_ssh.py
+        This script will connect to a ssh server HOST using the provided
+        USER and PASSWD and will issue the command and show the result"""
 
 def main():
   host = '192.168.1.7'
-  user = 'root'
-  passwd = 'openelec'
+  user = 'USERID'
+  passwd = 'PASSWD'
   command = 'uname -a'
   session_ssh(host, user, passwd, command)
 

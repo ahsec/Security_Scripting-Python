@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
 import sys
-
-""" This pyhton script reads all the messages from the /var/log/messages files and
-prints out the messages related to usb
+""" 
+This pyhton script reads all the messages from the /var/log/messages
+files and prints out the messages related to usb
 """
 
 def get_log_messages(string):
@@ -14,10 +14,10 @@ def get_log_messages(string):
     list_lines = filed.readlines()
     for line in list_lines:
       if string in line or str.lower(string) in line:
-        print line 
+        print line
   except IOError as detail:
     print "Error trying to read file: /var/log/messages: -> " + str(detail)
-    
+
 
 def main():
   args = sys.argv[1:]

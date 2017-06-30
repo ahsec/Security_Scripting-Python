@@ -2,20 +2,22 @@
 import urllib
 import sys
 from bs4 import BeautifulSoup
-
+'''
 ###########################################################
 # SPSE Module 4. Lesson 3. Ex 1.
-# Create a script that gets 'relevant information about a URL. 
-# Including: Titles of images and links, Titles of videos and links and text included in the HTML file
-# This script is highly dependant on the site queried. Works for some but no for others.
-# Created using http://www.joquz.com/2427/ronin-motor-works-limited-release-of-47-bikes as a model
-
-# Tested against: http://www.joquz.com/2427/ronin-motor-works-limited-release-of-47-bikes
-# Tested against: http://www.jornada.unam.mx/ultimas
-# Tested against: http://www.cnn.com/ 		<- Doesn't Work 
+# Create a script that gets 'relevant information about a URL.
+# Including: Titles of images and links, Titles of videos and links and text
+# included in the HTML file
+# This script is highly dependant on the site queried. Works for some but no
+# for others.
+# Created using
+http://www.joquz.com/2427/ronin-motor-works-limited-release-of-47-bikes
+as a model
+# Tested against the following
+http://www.joquz.com/2427/ronin-motor-works-limited-release-of-47-bikes
+http://www.jornada.unam.mx/ultimas
 ###########################################################
-
-
+'''
 def open_url(url):
   reading = urllib.urlopen(url)
   code = reading.code
@@ -44,7 +46,8 @@ def get_txt(bs):
 def get_html_info(url):
   (reading, code) = open_url(url)
   if code != 200:
-    print 'The website at the URL %s cannot be retrieved, please verify your URL and try again' %(url)
+    print 'The website at the URL %s cannot be retrieved, please verify ' +\
+          'your URL and try again' %(url)
     return -1
     exit
   else:
@@ -53,26 +56,21 @@ def get_html_info(url):
     title_link = get_links_titles(bs)
     videos_list = get_videos_info(bs)
     if len(txt) > 0:
-      print """############################################################################################
-TXT Content
-############################################################################################
-%s""" %(txt)
+      print '##### TXT Content #####\n %s' %(txt)
     if len(title_link) > 0:
-      print """############################################################################################
-Link Content
-############################################################################################"""
+      print '##### Link Content #####'
       for entry in title_link:
         print 'Title: %s <-> Link: %s' %(entry[0], entry[1])
     if len(videos_list) > 0:
-      print """############################################################################################
-Video Content
-############################################################################################"""
+      print '##### Video Content #####''
       for video in videos_list:
         print video
 
 def usage():
-  print """./HTML_Scraper.py URL
-This script gets 'relevant information about a URL. Including: Titles of images and links, Titles of videos and links and text included in the HTML file"""
+  print '''./HTML_Scraper.py URL
+        This script gets 'relevant information about a URL.
+        Including: Titles of images and links, Titles of videos and links and
+        text included in the HTML file'''
 
 def main():
   if len(sys.argv) < 2:
