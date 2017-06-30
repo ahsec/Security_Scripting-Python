@@ -13,17 +13,16 @@
   From the file  
   "/usr/src/kernels/3.16.3-200.fc20.i686+PAE/include/uapi/linux/if_ether.h"
 0x0800 is defined as:
-  define ETH_P_IP        0x0800          /* Internet Protocol packet */
+  define ETH_P_IP        0x0800          /* Internet Protocol packet
 
 * Raw_Socket_Full.py  
-  Second version of the Simple packet sniffer (Raw_Socket.py) that capture a
-packet of the form 0x0800 # IP packet
-Prints the Ethernet and IP headers and exits.
-This version adds information about the Ethernet, IP and TCP headers
+  Second version of the Simple packet sniffer (Raw_Socket.py) that capture a packet of the form 0x0800 # IP packet.  
+  Prints the Ethernet and IP headers and exits.  
+  This version adds information about the Ethernet, IP and TCP headers
 
   From the file   
   /usr/src/kernels/3.16.3-200.fc20.i686+PAE/include/uapi/
-  linux/if_ether.h" 0x0800 is defined as:  define ETH_P_IP        0x0800          /* Internet Protocol packet */
+  linux/if_ether.h" 0x0800 is defined as:  define ETH_P_IP        0x0800          /* Internet Protocol packet
 
   For reference, [Size of data types in pyhton](https://docs.python.org/2/library/struct.html)
 
@@ -42,26 +41,24 @@ incorrect information, meaning:
 
   [Reference - Reliable DNS spoofing with Python](http://danmcinerney.org/reliable-dns-spoofing-with-python-scapy-nfqueue)
 
-  Tested and verified using ettercap
-ettercap --iface wlo2 -T -M arp:remote /192.168.1.1// /192.168.1.3//
-Where 192.168.1.1 is the gateway and 192.168.1.3 is the victim
+  Tested and verified using ettercap ```ettercap --iface wlo2 -T -M arp:remote /192.168.1.1// /192.168.1.3//```  
+  Where 192.168.1.1 is the gateway and 192.168.1.3 is the victim
 
 * Scapy_SYN_scan.py  
-  Simple SYN scanner using the scapy module.
-This script will perform a SYN scan of the ports [21,22,23,80,443] for the
-supplied IP_Address
+  Simple SYN scanner using the scapy module.  
+  This script will perform a SYN scan of the ports [21,22,23,80,443] for the supplied IP_Address
 
   Sample output:  
   ```
-Received 7 packets, got 6 answers, remaining 0 packets
-Port: 21 - TCP flags: 20
-Port: 22 - TCP flags: 18
-Port: 22 responded with flags: SA
-Port: 23 - TCP flags: 20
-Port: 80 - TCP flags: 18
-Port: 80 responded with flags: SA
-Port: 56 - TCP flags: 20
-```
+  Received 7 packets, got 6 answers, remaining 0 packets
+  Port: 21 - TCP flags: 20
+  Port: 22 - TCP flags: 18
+  Port: 22 responded with flags: SA
+  Port: 23 - TCP flags: 20
+  Port: 80 - TCP flags: 18
+  Port: 80 responded with flags: SA
+  Port: 56 - TCP flags: 20
+  ```
 * Sniff_HTTP_scapy.py  
   HTTP sniffer using Scapy.
 Prints HTTP headers and data in GET/POST from captured packets
