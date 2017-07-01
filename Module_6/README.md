@@ -14,9 +14,5 @@ instructions of an EXE file.
 pydbg, looking for buffer overflow errors.
 
 * search_dll.py  
-  syntax: ```search_dll.py EXE_filename [dll_name]```
-
- If no dll_name is provided, this script will list all the dll files
-imported by the EXE file provided. If a dll_name is provided, this script
-will look in the Executable for the provided dll and return True if present
-or False if not
+  syntax: ```search_dll.py EXE_filename [dll_name]```  
+  If no dll_name is provided, this script will list all the dll files imported by the EXE file provided. If a dll_name is provided, this script will look in the Executable for the provided dll and return True if present or False if not
